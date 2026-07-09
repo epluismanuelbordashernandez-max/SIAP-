@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIAP — Sistema Inteligente de Adaptación Pedagógica</title>
+<meta name="description" content="SIAP registra estudiantes y sugiere al docente adaptaciones curriculares según necesidades auditivas, visuales y de ritmo de aprendizaje.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F6F1;
+    --bg-alt:#EBEFE6;
+    --ink:#1D2B27;
+    --ink-soft:#4A5750;
+    --primary:#2E6F5E;
+    --primary-dark:#204F42;
+    --amber:#D98C3D;
+    --violet:#6B5CA5;
+    --card:#FFFFFF;
+    --line:#DDE3D6;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.55;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    margin:0 0 .4em;
+    letter-spacing:-.01em;
+  }
+  .mono{
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-size:.75rem;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+  section{padding:96px 0;}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(244,246,241,.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    max-width:1120px;margin:0 auto;padding:18px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;}
+  .brand .dot{width:10px;height:10px;border-radius:2px;background:var(--primary);transform:rotate(45deg);}
+  nav .links{display:flex;gap:28px;font-size:.92rem;color:var(--ink-soft);}
+  nav .links a:hover{color:var(--primary);}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 20px;border-radius:100px;
+    font-size:.88rem;font-weight:600;
+    text-decoration:none;border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{box-shadow:0 8px 20px -8px rgba(46,111,94,.55);}
+  .btn-ghost{border-color:var(--ink);color:var(--ink);}
+
+  /* ---------- AR VIEWFINDER FRAME (signature element) ---------- */
+  .ar-frame{position:relative;padding:26px;}
+  .ar-frame::before,.ar-frame::after,
+  .ar-frame .c2,.ar-frame .c3{
+    content:"";position:absolute;width:26px;height:26px;
+    border:2.5px solid var(--primary);
+  }
+  .ar-frame::before{top:0;left:0;border-right:none;border-bottom:none;border-top-left-radius:8px;}
+  .ar-frame::after{bottom:0;right:0;border-left:none;border-top:none;border-bottom-right-radius:8px;}
+  .ar-frame .c2{top:0;right:0;border-left:none;border-bottom:none;border-top-right-radius:8px;}
+  .ar-frame .c3{bottom:0;left:0;border-right:none;border-top:none;border-bottom-left-radius:8px;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:88px 0 60px;}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;}
+  .eyebrow{color:var(--primary);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .eyebrow::before{content:"";width:7px;height:7px;background:var(--amber);border-radius:50%;}
+  .hero h1{font-size:clamp(2.1rem,4vw,3.2rem);line-height:1.08;}
+  .hero p.lead{font-size:1.08rem;color:var(--ink-soft);max-width:46ch;margin:18px 0 30px;}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;}
+
+  .scan-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--line);}
+  .scan-card svg{display:block;width:100%;height:auto;}
+
+  /* ---------- SECTION HEAD ---------- */
+  .sec-head{max-width:640px;margin-bottom:52px;}
+  .sec-head .mono{color:var(--primary);}
+  .sec-head h2{font-size:clamp(1.6rem,2.6vw,2.2rem);margin-top:10px;}
+
+  /* ---------- PROBLEM / DIVERSITY ---------- */
+  .diversity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .div-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:28px;
+  }
+  .div-card svg{width:38px;height:38px;color:var(--primary);margin-bottom:16px;}
+  .div-card h3{font-size:1.05rem;}
+  .div-card p{color:var(--ink-soft);font-size:.94rem;margin:0;}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .flow{background:var(--bg-alt);}
+  .flow-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative;}
+  .flow-step{position:relative;padding:0 24px;}
+  .flow-step:not(:first-child)::before{
+    content:"→";position:absolute;left:-6px;top:6px;color:var(--primary);font-size:1.4rem;
+  }
+  .flow-num{
+    font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--amber);
+    border:1px solid var(--amber);border-radius:100px;width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+  }
+  .flow-step h3{font-size:1.05rem;margin-bottom:8px;}
+  .flow-step p{color:var(--ink-soft);font-size:.93rem;}
+
+  /* ---------- LIFECYCLE (CRISP-DM path) ---------- */
+  .lifecycle-path{margin-top:20px;}
+  .lc-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;}
+  .lc-item{
+    display:grid;grid-template-columns:70px 1fr;gap:24px;
+    padding:26px 0;border-top:1px solid var(--line);
+  }
+  .lc-item:last-child{border-bottom:1px solid var(--line);}
+  .lc-index{font-family:'Fraunces',serif;font-size:1.8rem;color:var(--primary);opacity:.55;}
+  .lc-item h3{font-size:1.08rem;margin-bottom:6px;}
+  .lc-item p{color:var(--ink-soft);margin:0;font-size:.95rem;max-width:70ch;}
+  .lc-tag{
+    display:inline-block;margin-top:10px;font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem;background:var(--violet);color:#fff;padding:4px 10px;border-radius:100px;
+  }
+
+  /* ---------- STACK ---------- */
+  .stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .stack-chip{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px;text-align:center;font-size:.9rem;font-weight:600;
+  }
+  .stack-chip span{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;
+    font-size:.72rem;color:var(--ink-soft);margin-top:6px;text-transform:uppercase;letter-spacing:.05em;}
+
+  /* ---------- CTA / FOOTER ---------- */
+  .cta{
+    background:var(--primary-dark);color:#fff;border-radius:28px;
+    padding:64px 48px;text-align:center;margin:0 28px;
+  }
+  .cta h2{color:#fff;font-size:clamp(1.6rem,3vw,2.3rem);}
+  .cta p{color:#DDEAE4;max-width:52ch;margin:14px auto 30px;}
+  .cta .btn-primary{background:var(--amber);}
+  .cta .btn-ghost{border-color:#fff;color:#fff;}
+
+  footer{padding:48px 0;text-align:center;color:var(--ink-soft);font-size:.85rem;}
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .diversity-grid,.flow-steps,.stack-grid{grid-template-columns:1fr;}
+    .flow-step:not(:first-child)::before{display:none;}
+    section{padding:64px 0;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;} .btn{transition:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="brand"><span class="dot"></span> SIAP</div>
+    <div class="links">
+      <a href="#problema">El reto</a>
+      <a href="#funciona">Cómo funciona</a>
+      <a href="#ciclo">Ciclo de vida</a>
+      <a href="#stack">Tecnología</a>
+    </div>
+    <a class="btn btn-primary" href="#demo">Ver demo</a>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow mono">Proyecto académico · IA aplicada a la educación</div>
+        <h1>Cada estudiante aprende distinto. SIAP ayuda al docente a responder a tiempo.</h1>
+        <p class="lead">SIAP es un Sistema Inteligente de Adaptación Pedagógica: registra a los
+        estudiantes y su perfil de diversidad —auditiva, visual, ritmo de aprendizaje lento o
+        rápido, entre otras— y sugiere al docente adaptaciones curriculares concretas para cada caso.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#demo">Ver demo en Streamlit</a>
+          <a class="btn btn-ghost" href="#" id="repo-link">Ver código en GitHub</a>
+        </div>
+      </div>
+
+      <div class="ar-frame">
+        <span class="c2"></span><span class="c3"></span>
+        <div class="scan-card">
+          <svg viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Panel de perfil de estudiante escaneado por SIAP">
+            <rect width="420" height="360" rx="18" fill="#FFFFFF"/>
+            <rect x="24" y="28" width="372" height="70" rx="12" fill="#EFF4EC"/>
+            <circle cx="58" cy="63" r="20" fill="#2E6F5E"/>
+            <rect x="92" y="48" width="150" height="10" rx="5" fill="#1D2B27" opacity=".7"/>
+            <rect x="92" y="66" width="100" height="8" rx="4" fill="#4A5750" opacity=".45"/>
+            <rect x="24" y="116" width="176" height="90" rx="12" fill="#F4F6F1" stroke="#DDE3D6"/>
+            <text x="40" y="140" font-family="IBM Plex Mono, monospace" font-size="10" fill="#2E6F5E">NECESIDAD</text>
+            <text x="40" y="168" font-family="Inter, sans-serif" font-size="14" fill="#1D2B27" font-weight="600">Auditiva</text>
+            <rect x="40" y="180" width="120" height="8" rx="4" fill="#D98C3D" opacity=".85"/>
+            <rect x="220" y="116" width="176" height="90" rx="12" fill="#F4F6F1" stroke="#DDE3D6"/>
+            <text x="236" y="140" font-family="IBM Plex Mono, monospace" font-size="10" fill="#2E6F5E">RITMO</text>
+            <text x="236" y="168" font-family="Inter, sans-serif" font-size="14" fill="#1D2B27" font-weight="600">Acelerado</text>
+            <rect x="236" y="180" width="120" height="8" rx="4" fill="#6B5CA5" opacity=".85"/>
+            <rect x="24" y="224" width="372" height="108" rx="12" fill="#2E6F5E"/>
+            <text x="44" y="250" font-family="IBM Plex Mono, monospace" font-size="10" fill="#CDE7DC">SUGERENCIA SIAP</text>
+            <text x="44" y="280" font-family="Fraunces, serif" font-size="16" fill="#FFFFFF" font-weight="600">Subtítulos + apoyo visual</text>
+            <text x="44" y="302" font-family="Inter, sans-serif" font-size="11" fill="#CDE7DC">reforzado en clase de Ciencias</text>
+            <g stroke="#FFFFFF" stroke-width="1.4" opacity=".6">
+              <line x1="360" y1="248" x2="374" y2="248"/>
+              <line x1="360" y1="248" x2="360" y2="262"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMA / DIVERSIDAD -->
+  <section id="problema">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="mono">El reto</div>
+        <h2>Un aula, muchas formas de aprender</h2>
+        <p style="color:var(--ink-soft)">Los docentes atienden grupos numerosos con necesidades muy
+        distintas, pero rara vez tienen tiempo o herramientas para diseñar una adaptación curricular
+        por estudiante. SIAP traduce esa información dispersa en una recomendación clara.</p>
+      </div>
+      <div class="diversity-grid">
+        <div class="div-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 0 1 18 0v5a3 3 0 0 1-3 3h-1v-7h4M3 12v5a3 3 0 0 0 3 3h1v-7H3"/></svg>
+          <h3>Diversidad auditiva</h3>
+          <p>Identifica estudiantes que se benefician de subtítulos, apoyo visual o lengua de señas.</p>
+        </div>
+        <div class="div-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <h3>Diversidad visual</h3>
+          <p>Detecta necesidad de material ampliado, alto contraste o descripciones auditivas.</p>
+        </div>
+        <div class="div-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z"/><path d="M12 6v6l4 2"/></svg>
+          <h3>Ritmo de aprendizaje</h3>
+          <p>Distingue entre estudiantes que necesitan refuerzo y quienes requieren retos adicionales.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section id="funciona" class="flow">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="mono">Cómo funciona</div>
+        <h2>De la matrícula a la recomendación en el aula</h2>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-num">01</div>
+          <h3>Registro del estudiante</h3>
+          <p>El docente o el centro registra al estudiante junto con indicadores de diversidad y desempeño.</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">02</div>
+          <h3>Análisis del perfil</h3>
+          <p>El modelo procesa esos indicadores y los compara con patrones de casos previos.</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">03</div>
+          <h3>Sugerencia al docente</h3>
+          <p>SIAP entrega una recomendación de adaptación curricular lista para aplicar en clase.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CICLO DE VIDA -->
+  <section id="ciclo">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="mono">Ciclo de vida del proyecto</div>
+        <h2>Metodología CRISP-DM aplicada a SIAP</h2>
+        <p style="color:var(--ink-soft)">El proyecto sigue las seis fases estándar de un proyecto
+        de ciencia de datos, adaptadas al contexto educativo.</p>
+      </div>
+      <ol class="lc-list lifecycle-path">
+        <li class="lc-item">
+          <div class="lc-index">01</div>
+          <div>
+            <h3>Comprensión del negocio educativo</h3>
+            <p>Se define el problema: docentes sin tiempo ni herramientas para adaptar el currículo
+            a la diversidad del aula, y el objetivo de SIAP como sistema de apoyo a la decisión.</p>
+            <span class="lc-tag">Business Understanding</span>
+          </div>
+        </li>
+        <li class="lc-item">
+          <div class="lc-index">02</div>
+          <div>
+            <h3>Comprensión de los datos</h3>
+            <p>Se identifican las variables relevantes del estudiante: necesidades auditivas,
+            visuales, ritmo de aprendizaje, historial de desempeño y observaciones del docente.</p>
+            <span class="lc-tag">Data Understanding</span>
+          </div>
+        </li>
+        <li class="lc-item">
+          <div class="lc-index">03</div>
+          <div>
+            <h3>Preparación de los datos</h3>
+            <p>Limpieza, codificación de variables categóricas y balanceo de clases antes de
+            entrenar el modelo de recomendación.</p>
+            <span class="lc-tag">Data Preparation</span>
+          </div>
+        </li>
+        <li class="lc-item">
+          <div class="lc-index">04</div>
+          <div>
+            <h3>Modelado</h3>
+            <p>Entrenamiento del modelo que clasifica el perfil del estudiante y sugiere el tipo de
+            adaptación curricular más adecuado, documentado en el notebook del proyecto.</p>
+            <span class="lc-tag">Modeling</span>
+          </div>
+        </li>
+        <li class="lc-item">
+          <div class="lc-index">05</div>
+          <div>
+            <h3>Evaluación</h3>
+            <p>Se valida el desempeño del modelo con métricas de clasificación y revisión pedagógica
+            de las sugerencias generadas.</p>
+            <span class="lc-tag">Evaluation</span>
+          </div>
+        </li>
+        <li class="lc-item">
+          <div class="lc-index">06</div>
+          <div>
+            <h3>Despliegue</h3>
+            <p>El modelo se expone al docente a través de una app en Streamlit, con el código y la
+            documentación publicados en GitHub.</p>
+            <span class="lc-tag">Deployment</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="mono">Tecnología</div>
+        <h2>Con qué está construido SIAP</h2>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-chip">Python <span>Lenguaje base</span></div>
+        <div class="stack-chip">scikit-learn <span>Modelo de clasificación</span></div>
+        <div class="stack-chip">Streamlit <span>Interfaz para el docente</span></div>
+        <div class="stack-chip">Jupyter <span>Análisis y entrenamiento</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="demo">
+    <div class="cta">
+      <h2>Pruébalo desde la perspectiva del docente</h2>
+      <p>La demo en Streamlit permite ingresar el perfil de un estudiante y ver, en segundos,
+      la adaptación curricular que SIAP sugiere.</p>
+      <div class="hero-cta" style="justify-content:center;">
+        <a class="btn btn-primary" href="#" id="streamlit-link">Abrir demo Streamlit</a>
+        <a class="btn btn-ghost" href="#" id="repo-link-2">Repositorio en GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">SIAP — Sistema Inteligente de Adaptación Pedagógica · Proyecto académico, 2026</div>
+</footer>
+
+</body>
+</html>
